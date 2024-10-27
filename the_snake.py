@@ -1,5 +1,4 @@
-from random import choice, randint
-
+import random
 import pygame
 
 # Константы для размеров поля и сетки:
@@ -45,7 +44,7 @@ class GameObject:
     """Базовый класс для игровых объектов."""
 
     def __init__(self, position=CENTRE_PONIT, body_color=(1, 2, 3)):
-        """Инициализирует базовые атрибуты объекта - позицию и цвет."""
+        """Инициализирует базовые атрибуты объекта позицию и цвет."""
         self.position = position
         self.body_color = body_color
 
@@ -65,8 +64,8 @@ class Apple(GameObject):
     def randomize_position(self, snake_positions):
         """Рандомизирует позицию яблока на экране."""
         while True:
-            x = randint(0, GRID_WIDTH - 1) * GRID_SIZE
-            y = randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            x = random.randint(0, GRID_WIDTH - 1) * GRID_SIZE
+            y = random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE
             new_position = (x, y)
             # Проверяем, чтобы яблоко не заспавнилось в теле змейки
             if new_position not in snake_positions:
@@ -126,7 +125,7 @@ class Snake(GameObject):
         """Сбрасывает змейку в начальное состояние."""
         self.length = 1
         self.positions = [self.position]
-        self.direction = choice([UP, DOWN, LEFT, RIGHT])
+        self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
         self.next_direction = None
 
 
