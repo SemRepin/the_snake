@@ -120,7 +120,7 @@ class Snake(GameObject):
         if len(self.positions) > self.length:
             self.positions.pop()
         # self.positions.pop() if len(self.positions) > self.length else None
-        # Я не смог додуматься как это правильно использовать
+        # Я не смог додуматься как это использовать
         # с присвоением к переменной :(
 
     def draw(self) -> None:
