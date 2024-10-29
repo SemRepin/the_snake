@@ -1,11 +1,11 @@
 import random as rnd
-from typing import Union
+from typing import Optional
 
 import pygame as pg
 
 # Константы типов
 RGB = tuple[int, int, int]
-COORD = tuple[int, int]
+COORDINATES = tuple[int, int]
 
 # Константы для размеров поля и сетки:
 SCREEN_WIDTH: int = 640
@@ -13,13 +13,13 @@ SCREEN_HEIGHT: int = 480
 GRID_SIZE: int = 20
 GRID_WIDTH: int = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT: int = SCREEN_HEIGHT // GRID_SIZE
-CENTRE_PONIT: COORD = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+CENTRE_PONIT: COORDINATES = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
 
 # Направления движения:
-UP: COORD = (0, -1)
-DOWN: COORD = (0, 1)
-LEFT: COORD = (-1, 0)
-RIGHT: COORD = (1, 0)
+UP: COORDINATES = (0, -1)
+DOWN: COORDINATES = (0, 1)
+LEFT: COORDINATES = (-1, 0)
+RIGHT: COORDINATES = (1, 0)
 
 # Константы цветов
 BASE_COLOR: RGB = (1, 2, 3)
@@ -42,10 +42,10 @@ clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровых объектов."""
 
-    position: COORD
+    position: COORDINATES
     body_color: RGB
 
-    def __init__(self, position: COORD = CENTRE_PONIT,
+    def __init__(self, position: COORDINATES = CENTRE_PONIT,
                  body_color: RGB = BASE_COLOR) -> None:
         """Инициализирует базовые атрибуты объекта позицию и цвет."""
         self.position = position
@@ -59,18 +59,22 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко и действия с ним."""
 
-    def __init__(self, occupied_positions: list[COORD] = [CENTRE_PONIT],
-                 position: COORD = CENTRE_PONIT,
+    def __init__(self, occupied_positions: list[COORDINATES] | None = None,
+                 position: COORDINATES = CENTRE_PONIT,
                  body_color: RGB = BASE_COLOR) -> None:
         """Задает цвет яблока и устанавливает позицию на экране."""
+        occupied_positions = occupied_positions or [CENTRE_PONIT]
         super().__init__(position=CENTRE_PONIT, body_color=APPLE_COLOR)
         self.randomize_position(occupied_positions)
 
-    def randomize_position(self, occupied_positions: list[COORD]) -> None:
+    def randomize_position(self,
+                           occupied_positions: list[COORDINATES]) -> None:
         """Рандомизирует позицию яблока на экране."""
         while True:
-            new_position: COORD = (rnd.randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                                   rnd.randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            new_position: COORDINATES = (
+                rnd.randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                rnd.randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+
             # Проверяем, чтобы яблоко не заспавнилось в теле змейки
             if new_position not in occupied_positions:
                 self.position = new_position
@@ -87,11 +91,11 @@ class Snake(GameObject):
     """Класс, описывающий змейку и её поведение."""
 
     length: int
-    positions: list[COORD]
-    direction: COORD
-    next_direction: Union[COORD, None]
+    positions: list[COORDINATES]
+    direction: COORDINATES
+    next_direction: Optional[COORDINATES]
 
-    def __init__(self, position: COORD = CENTRE_PONIT,
+    def __init__(self, position: COORDINATES = CENTRE_PONIT,
                  body_color: RGB = BASE_COLOR) -> None:
         """Инициализирует начальное состояние змейки."""
         super().__init__(position=CENTRE_PONIT, body_color=SNAKE_COLOR)
@@ -119,9 +123,6 @@ class Snake(GameObject):
         # Если змея не увеличилась, убираем последний сегмент
         if len(self.positions) > self.length:
             self.positions.pop()
-        # self.positions.pop() if len(self.positions) > self.length else None
-        # Я не смог додуматься как это использовать
-        # с присвоением к переменной :(
 
     def draw(self) -> None:
         """Рисует змейку на экране."""
@@ -130,7 +131,7 @@ class Snake(GameObject):
             pg.draw.rect(screen, self.body_color, rect)
             pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
-    def get_head_position(self) -> COORD:
+    def get_head_position(self) -> COORDINATES:
         """Возвращает позицию головы змейки."""
         return self.positions[0]
 
@@ -144,7 +145,7 @@ class Snake(GameObject):
 
 def handle_keys(snake: Snake) -> None:
     """Функция обработки действий пользователя."""
-    key_directions: dict[int, COORD] = {
+    key_directions: dict[int, COORDINATES] = {
         pg.K_UP: UP,
         pg.K_DOWN: DOWN,
         pg.K_LEFT: LEFT,
