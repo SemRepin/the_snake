@@ -59,13 +59,14 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко и действия с ним."""
 
-    def __init__(self, occupied_positions: list[COORDINATES] | None = None,
+    def __init__(self, occupied_positions: Optional[list[COORDINATES]] = None,
                  position: COORDINATES = CENTRE_PONIT,
                  body_color: RGB = BASE_COLOR) -> None:
         """Задает цвет яблока и устанавливает позицию на экране."""
         occupied_positions = occupied_positions or [CENTRE_PONIT]
         super().__init__(position=CENTRE_PONIT, body_color=APPLE_COLOR)
         self.randomize_position(occupied_positions)
+        # При использовании оператора | в init ругается pytest
 
     def randomize_position(self,
                            occupied_positions: list[COORDINATES]) -> None:
